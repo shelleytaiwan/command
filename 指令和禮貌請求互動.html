@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>句型練習－移動物品指令</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+  :root {
+    --teal:#1D9E75; --teal-light:#E1F5EE; --teal-border:#5DCAA5; --teal-dark:#085041;
+    --purple:#534AB7; --purple-light:#EEEDFE; --purple-border:#AFA9EC; --purple-dark:#3C3489;
+    --amber:#EF9F27; --amber-light:#FAEEDA; --amber-dark:#633806;
+    --coral:#F0997B; --coral-light:#FAECE7; --coral-dark:#4A1B0C;
+    --red:#993C1D; --bg:#F5F3EE; --text:#2C2C2A; --muted:#888780; --border:#D3D1C7;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+  body { font-family:'Noto Sans TC',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding:12px; overflow-x:hidden; }
+
+  h1 { font-size:20px; font-weight:900; color:var(--teal-dark); text-align:center; margin-bottom:12px; letter-spacing:0.02em; }
+
+
+  /* ── 7-col grid ── */
+  .grid { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; margin-bottom:14px; }
+  .col { border-radius:10px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.08); }
+  .col-header { padding:6px 4px; font-size:11px; font-weight:700; text-align:center; }
+  .col-body { padding:5px; display:flex; flex-direction:column; gap:4px; }
+
+  /* col 7: split into two halves */
+  .col7-top, .col7-bot { padding:5px; display:flex; flex-direction:column; gap:4px; }
+  .col7-divider { height:2px; background:var(--amber); margin:0; }
+
+  .c1{background:var(--teal-light);border:1.5px solid var(--teal-border);}
+  .c1 .col-header{background:var(--teal-border);color:var(--teal-dark);}
+  .c1 .chip{border-color:var(--teal-border);color:var(--teal-dark);}
+
+  .c2{background:var(--amber-light);border:1.5px solid var(--amber);}
+  .c2 .col-header{background:var(--amber);color:var(--amber-dark);}
+  .c2 .chip{border-color:var(--amber);color:var(--amber-dark);}
+
+  .c3{background:var(--purple-light);border:1.5px solid var(--purple-border);}
+  .c3 .col-header{background:var(--purple-border);color:var(--purple-dark);}
+  .c3 .chip{border-color:var(--purple-border);color:var(--purple-dark);}
+
+  .c4{background:var(--coral-light);border:1.5px solid var(--coral);}
+  .c4 .col-header{background:var(--coral);color:var(--coral-dark);}
+  .c4 .chip{border-color:var(--coral);color:var(--coral-dark);}
+
+  .c5{background:var(--teal-light);border:1.5px solid var(--teal-border);}
+  .c5 .col-header{background:var(--teal-border);color:var(--teal-dark);}
+  .c5 .chip{border-color:var(--teal-border);color:var(--teal-dark);}
+
+  .c6{background:var(--purple-light);border:1.5px solid var(--purple-border);}
+  .c6 .col-header{background:var(--purple-border);color:var(--purple-dark);}
+  .c6 .chip{border-color:var(--purple-border);color:var(--purple-dark);}
+
+  .c7{background:var(--amber-light);border:1.5px solid var(--amber);}
+  .c7 .col-header{background:var(--amber);color:var(--amber-dark);}
+  .c7 .chip{border-color:var(--amber);color:var(--amber-dark);}
+  .c7 .chip-dir{border-color:var(--purple-border);color:var(--purple-dark);background:var(--purple-light);}
+  .c7 .chip-who{border-color:var(--teal-border);color:var(--teal-dark);background:var(--teal-light);}
+
+  .chip {
+    background:white; border:1.5px solid; border-radius:6px;
+    padding:4px 3px; font-size:11px; font-weight:700;
+    text-align:center; cursor:pointer;
+    transition:transform 0.1s, opacity 0.15s;
+    user-select:none; line-height:1.3; word-break:keep-all;
+  }
+  .chip:hover{transform:scale(1.04);}
+  .chip.selected{opacity:0.3; transform:scale(0.96);}
+
+  /* ── Formula bar ── */
+  .formula-section {
+    background:white; border-radius:12px;
+    padding:14px 16px; box-shadow:0 2px 8px rgba(0,0,0,0.08);
+    margin-bottom:12px; width:100%;
+  }
+  .formula-row {
+    display:flex; align-items:center; justify-content:center;
+    gap:5px; width:100%;
+  }
+  .f-box {
+    border-radius:7px; padding:7px 10px;
+    font-size:13px; font-weight:700;
+    white-space:nowrap; flex-shrink:0;
+  }
+  .f-arrow { color:var(--muted); font-size:16px; flex-shrink:0; }
+  .f-v-wrap {
+    display:flex; flex-direction:column; align-items:center; gap:3px; flex-shrink:0;
+  }
+  .f-v-boxes { display:flex; gap:4px; align-items:center; }
+  .f-v {
+    background:var(--teal-light); border:1.5px solid var(--teal-border);
+    color:var(--teal-dark); padding:7px 12px; flex-shrink:0;
+    border-radius:7px; font-size:13px; font-weight:700;
+  }
+  .f-note {
+    font-size:11px; color:var(--red); font-weight:700;
+    text-decoration:underline; text-underline-offset:2px;
+    white-space:nowrap; flex-shrink:0;
+  }
+  .f-branch {
+    display:flex; flex-direction:column; gap:4px;
+  }
+  .f-dir {
+    background:var(--purple-light); border:1.5px solid var(--purple-border);
+    color:var(--purple-dark); font-size:12px;
+  }
+  .f-who {
+    background:var(--teal-light); border:1.5px solid var(--teal-border);
+    color:var(--teal-dark); font-size:12px;
+  }
+
+  /* ── Drop zone ── */
+  .drop-section { background:white; border-radius:12px; padding:12px 14px; box-shadow:0 2px 8px rgba(0,0,0,0.08); }
+  .drop-zone {
+    min-height:54px; border:2px dashed var(--border); border-radius:8px;
+    display:flex; flex-wrap:wrap; align-items:center;
+    gap:6px; padding:8px 10px;
+    transition:border-color 0.2s, background 0.2s; margin-bottom:10px;
+  }
+  .drop-zone.drag-over { border-color:var(--teal); background:var(--teal-light); }
+
+  .sentence-chip {
+    display:inline-flex; align-items:center; gap:4px;
+    background:var(--teal-light); border:1.5px solid var(--teal-border);
+    border-radius:7px; padding:6px 10px;
+    font-size:14px; font-weight:700; color:var(--teal-dark);
+    cursor:grab; user-select:none; touch-action:none;
+  }
+  .remove-btn {
+    width:15px; height:15px; border-radius:50%;
+    background:var(--teal-border); color:white;
+    font-size:10px; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; flex-shrink:0; font-weight:900; line-height:1;
+  }
+  .btn-row { display:flex; gap:8px; }
+  .btn {
+    flex:1; padding:11px; border-radius:8px; border:none;
+    font-family:'Noto Sans TC',sans-serif; font-size:14px;
+    font-weight:700; cursor:pointer; transition:transform 0.1s;
+  }
+  .btn:active{transform:scale(0.97);}
+  .btn-reset { background:var(--bg); border:1.5px solid var(--border); color:var(--muted); }
+  .btn-check { background:var(--teal); color:white; }
+  .result-msg { text-align:center; font-size:14px; font-weight:700; margin-top:10px; min-height:20px; }
+  .result-msg.good{color:var(--teal);}
+  .result-msg.bad{color:var(--red);}
+
+  #drag-ghost {
+    position:fixed; pointer-events:none; z-index:9999;
+    background:var(--teal-light); border:2px solid var(--teal);
+    border-radius:8px; padding:6px 12px;
+    font-family:'Noto Sans TC',sans-serif; font-size:14px; font-weight:700;
+    color:var(--teal-dark); box-shadow:0 8px 24px rgba(0,0,0,0.2);
+    display:none; white-space:nowrap;
+  }
+</style>
+</head>
+<body>
+
+<h1>校園指令和禮貌請求</h1>
+
+<div class="grid" id="wordGrid"></div>
+
+<!-- Formula bar -->
+<div class="formula-section">
+  <div class="formula-row">
+    <span class="f-box" style="background:#F1EFE8;border:1.5px solid #D3D1C7;color:#2C2C2A;">叫人</span>
+    <span class="f-arrow">—</span>
+    <span class="f-box" style="background:var(--coral-light);border:1.5px solid var(--coral);color:var(--coral-dark);">禮貌用語</span>
+    <span class="f-arrow">—</span>
+    <span class="f-box" style="background:var(--amber-light);border:1.5px solid var(--amber);color:var(--amber-dark);">東西</span>
+    <span class="f-arrow">—</span>
+    <span class="f-box" style="background:var(--coral-light);border:1.5px solid var(--coral);color:var(--coral-dark);">禮貌用語</span>
+    <span class="f-arrow">→</span>
+    <div class="f-v-wrap">
+      <div class="f-v-boxes">
+        <span class="f-v">V1</span>
+        <span class="f-arrow" style="font-size:12px;">—</span>
+        <span class="f-v">V2</span>
+        <span class="f-arrow" style="font-size:12px;">—</span>
+        <span class="f-v">V3</span>
+        <span style="font-size:13px;color:var(--teal-dark);font-weight:700;flex-shrink:0;">···</span>
+      </div>
+      <span class="f-note">動作詞組注意時間順序！</span>
+    </div>
+    <span class="f-arrow">→</span>
+    <div class="f-branch">
+      <span class="f-box f-dir">方向：來／去／上來／下去</span>
+      <span class="f-box f-who">給誰</span>
+    </div>
+  </div>
+</div>
+
+<!-- Drop zone -->
+<div class="drop-section">
+  <div class="drop-zone" id="dropZone"></div>
+  <div class="btn-row">
+    <button class="btn btn-reset" onclick="resetAll()">🔄 重置</button>
+    <button class="btn btn-check" onclick="readSentence()">📢 唸出來</button>
+  </div>
+  <div class="result-msg" id="resultMsg"></div>
+</div>
+
+<div id="drag-ghost"></div>
+
+<script>
+const groups = [
+  { title:"① 叫人",     cls:"c1", words:["小老師","班長","王老師","陳主任","林同學","Linda"] },
+  { title:"② 東西",     cls:"c2", words:["講義","考卷","白板筆","椅子","課本","作業","車"] },
+  { title:"③ 時間",     cls:"c3", words:["明天","下星期一","等一下"] },
+  { title:"④ 禮貌用語", cls:"c4", words:["請（你）","不好意思","麻煩你","請你幫我","麻煩你幫我","請你幫我～，好嗎？","可以請你幫我～嗎？","可以麻煩你幫我～嗎？"] },
+  { title:"⑤ （去/到）地點", cls:"c5", words:["辦公室","總務處","教務處","活動中心","保健室"] },
+  { title:"⑥ 動詞",     cls:"c6", words:["拿","帶","叫","交","發","傳","改","教","找","收"] },
+];
+const col7 = {
+  title:"⑦ 方向／給誰",
+  dir:["來","去","上來","下去"],
+  who:["給陳主任","給林老師","給我"]
+};
+
+const grid = document.getElementById('wordGrid');
+const dropZone = document.getElementById('dropZone');
+const ghost = document.getElementById('drag-ghost');
+
+// Build cols 1–6
+groups.forEach(g => {
+  const col = document.createElement('div');
+  col.className = `col ${g.cls}`;
+  col.innerHTML = `<div class="col-header">${g.title}</div><div class="col-body"></div>`;
+  const body = col.querySelector('.col-body');
+  g.words.forEach(w => buildChip(w, body, g.cls));
+  grid.appendChild(col);
+});
+
+// Build col 7 — split with divider
+const col7el = document.createElement('div');
+col7el.className = 'col c7';
+col7el.innerHTML = `<div class="col-header">${col7.title}</div>
+  <div class="col7-top"></div>
+  <div class="col7-divider"></div>
+  <div class="col7-bot"></div>`;
+col7.dir.forEach(w => buildChip(w, col7el.querySelector('.col7-top'), 'c7 chip-dir'));
+col7.who.forEach(w => buildChip(w, col7el.querySelector('.col7-bot'), 'c7 chip-who'));
+grid.appendChild(col7el);
+
+function buildChip(w, container, extraCls='') {
+  const chip = document.createElement('div');
+  chip.className = 'chip';
+  if (extraCls) chip.classList.add(...extraCls.split(' ').filter(Boolean));
+  chip.textContent = w;
+  chip.dataset.word = w;
+  chip.addEventListener('click', () => addWord(w, chip));
+  chip.addEventListener('touchstart', onChipTouchStart, {passive:false});
+  container.appendChild(chip);
+}
+
+function addWord(word, sourceChip) {
+  if (sourceChip && sourceChip.classList.contains('selected')) return;
+  if (sourceChip) sourceChip.classList.add('selected');
+  const sc = document.createElement('div');
+  sc.className = 'sentence-chip';
+  sc.dataset.word = word;
+  sc.innerHTML = `${word}<span class="remove-btn" onclick="removeChip(this)">✕</span>`;
+  makeDraggable(sc);
+  dropZone.appendChild(sc);
+  document.getElementById('resultMsg').textContent = '';
+}
+
+function removeChip(btn) {
+  const sc = btn.parentElement;
+  const word = sc.dataset.word;
+  sc.remove();
+  document.querySelectorAll('.chip').forEach(c => { if(c.dataset.word===word) c.classList.remove('selected'); });
+  document.getElementById('resultMsg').textContent = '';
+}
+
+function resetAll() {
+  dropZone.innerHTML = '';
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+  document.getElementById('resultMsg').textContent = '';
+}
+
+function readSentence() {
+  const chips = dropZone.querySelectorAll('.sentence-chip');
+  if (!chips.length) { showMsg('還沒有詞語喔！','bad'); return; }
+  const sentence = Array.from(chips).map(c => c.dataset.word).join('');
+  showMsg('✓ ' + sentence, 'good');
+  if ('speechSynthesis' in window) {
+    const utt = new SpeechSynthesisUtterance(sentence);
+    utt.lang='zh-TW'; utt.rate=0.85;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utt);
+  }
+}
+
+function showMsg(txt, cls) {
+  const el = document.getElementById('resultMsg');
+  el.className = 'result-msg ' + cls;
+  el.textContent = txt;
+}
+
+function makeDraggable(el) { el.addEventListener('touchstart', onSentenceTouchStart, {passive:false}); }
+
+let touchDragEl=null, touchOffX=0, touchOffY=0, touchPlaceholder=null;
+
+function onSentenceTouchStart(e) {
+  if (e.target.classList.contains('remove-btn')) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  touchDragEl = e.currentTarget;
+  const rect = touchDragEl.getBoundingClientRect();
+  touchOffX = t.clientX - rect.left;
+  touchOffY = t.clientY - rect.top;
+  touchPlaceholder = document.createElement('div');
+  touchPlaceholder.style.cssText=`width:${rect.width}px;height:${rect.height}px;border-radius:7px;background:var(--teal-light);border:2px dashed var(--teal-border);flex-shrink:0;`;
+  touchDragEl.parentNode.insertBefore(touchPlaceholder, touchDragEl);
+  ghost.textContent = touchDragEl.dataset.word;
+  ghost.style.display='block';
+  ghost.style.left=(t.clientX-touchOffX)+'px';
+  ghost.style.top=(t.clientY-touchOffY)+'px';
+  document.addEventListener('touchmove', onSentenceTouchMove, {passive:false});
+  document.addEventListener('touchend', onSentenceTouchEnd);
+}
+
+function onSentenceTouchMove(e) {
+  e.preventDefault();
+  const t = e.touches[0];
+  ghost.style.left=(t.clientX-touchOffX)+'px';
+  ghost.style.top=(t.clientY-touchOffY)+'px';
+  const chips = Array.from(dropZone.querySelectorAll('.sentence-chip')).filter(c=>c!==touchDragEl);
+  let inserted=false;
+  for (const chip of chips) {
+    const r=chip.getBoundingClientRect();
+    if (t.clientX < r.left+r.width/2) { dropZone.insertBefore(touchPlaceholder,chip); inserted=true; break; }
+  }
+  if (!inserted) dropZone.appendChild(touchPlaceholder);
+}
+
+function onSentenceTouchEnd() {
+  ghost.style.display='none';
+  if (touchPlaceholder && touchDragEl) { touchPlaceholder.parentNode.insertBefore(touchDragEl,touchPlaceholder); touchPlaceholder.remove(); }
+  touchDragEl=null; touchPlaceholder=null;
+  document.removeEventListener('touchmove',onSentenceTouchMove);
+  document.removeEventListener('touchend',onSentenceTouchEnd);
+}
+
+let chipDragEl=null, chipWord=null;
+function onChipTouchStart(e) {
+  e.preventDefault();
+  const chip=e.currentTarget;
+  if (chip.classList.contains('selected')) return;
+  chipWord=chip.dataset.word; chipDragEl=chip;
+  const t=e.touches[0];
+  ghost.textContent=chipWord; ghost.style.display='block';
+  ghost.style.left=(t.clientX-20)+'px'; ghost.style.top=(t.clientY-20)+'px';
+  document.addEventListener('touchmove',onChipTouchMove,{passive:false});
+  document.addEventListener('touchend',onChipTouchEnd);
+}
+function onChipTouchMove(e) {
+  e.preventDefault();
+  const t=e.touches[0];
+  ghost.style.left=(t.clientX-20)+'px'; ghost.style.top=(t.clientY-20)+'px';
+  const r=dropZone.getBoundingClientRect();
+  dropZone.classList.toggle('drag-over', t.clientX>r.left&&t.clientX<r.right&&t.clientY>r.top&&t.clientY<r.bottom);
+}
+function onChipTouchEnd(e) {
+  ghost.style.display='none'; dropZone.classList.remove('drag-over');
+  const t=e.changedTouches[0];
+  const r=dropZone.getBoundingClientRect();
+  if (t.clientX>r.left&&t.clientX<r.right&&t.clientY>r.top&&t.clientY<r.bottom) addWord(chipWord,chipDragEl);
+  chipDragEl=null; chipWord=null;
+  document.removeEventListener('touchmove',onChipTouchMove);
+  document.removeEventListener('touchend',onChipTouchEnd);
+}
+</script>
+</body>
+</html>
