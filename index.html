@@ -3,305 +3,571 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>句型練習－移動物品指令</title>
+<title>指令和禮貌請求</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
-  :root {
-    --teal:#1D9E75; --teal-light:#E1F5EE; --teal-border:#5DCAA5; --teal-dark:#085041;
-    --purple:#534AB7; --purple-light:#EEEDFE; --purple-border:#AFA9EC; --purple-dark:#3C3489;
-    --amber:#EF9F27; --amber-light:#FAEEDA; --amber-dark:#633806;
-    --coral:#F0997B; --coral-light:#FAECE7; --coral-dark:#4A1B0C;
-    --red:#993C1D; --bg:#F5F3EE; --text:#2C2C2A; --muted:#888780; --border:#D3D1C7;
+  :root{
+    --paper:#F7F3EA; --ink:#2B2924; --ink-soft:#75705F; --line:#E1DACB; --card-bg:#FFFFFF;
+    --shadow:0 1px 3px rgba(43,41,36,0.08),0 4px 14px rgba(43,41,36,0.06);
+
+    --caller:#1D8A67; --caller-bg:#E3F4EC; --caller-ink:#0F5A41;
+    --item:#B8791E;   --item-bg:#FBF0DA;   --item-ink:#6B4708;
+    --time:#6E4E9E;   --time-bg:#EFEAF9;   --time-ink:#402D66;
+    --polite:#BD5B3D; --polite-bg:#FBEAE3; --polite-ink:#6E2E1B;
+    --loc:#2C6E8C;    --loc-bg:#E4F1F6;    --loc-ink:#173F51;
+    --verb:#4A3F97;   --verb-bg:#ECE9FA;   --verb-ink:#2B2361;
+    --dir:#A56420;    --dir-bg:#F8EEDC;    --dir-ink:#5C3810;
+
+    --success:#1E8A52; --success-bg:#E2F4EA; --success-ink:#0E4E2C;
+    --danger:#C0392B;  --danger-bg:#FBE7E4;  --danger-ink:#6E2015;
+    --info:#2C6E8C;    --info-bg:#E4F1F6;    --info-ink:#173F51;
   }
-  * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
-  body { font-family:'Noto Sans TC',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding:16px 16px 8px; overflow-x:hidden; display:flex; flex-direction:column; }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#211F1A; --ink:#EDE9DD; --ink-soft:#A9A392; --line:#3A362C; --card-bg:#2A2822;
+      --shadow:0 1px 3px rgba(0,0,0,0.4),0 4px 16px rgba(0,0,0,0.3);
 
-  h1 { font-size:28px; font-weight:900; color:var(--teal-dark); text-align:center; margin-bottom:16px; letter-spacing:0.02em; flex-shrink:0; }
+      --caller:#4FCB9B; --caller-bg:#123B2E; --caller-ink:#8FE0BE;
+      --item:#E0A542;   --item-bg:#3B2C10;   --item-ink:#F0C374;
+      --time:#9C82E0;   --time-bg:#2A2247;   --time-ink:#C9B8F5;
+      --polite:#E08862; --polite-bg:#3A2018; --polite-ink:#F0AE93;
+      --loc:#4FA6C9;    --loc-bg:#12313D;    --loc-ink:#9AD4EC;
+      --verb:#7A6BDA;   --verb-bg:#211D42;   --verb-ink:#B9AFF0;
+      --dir:#D99A3E;    --dir-bg:#3A2A10;    --dir-ink:#F0C579;
 
-
-  /* ── 7-col grid ── */
-  .grid { display:grid; grid-template-columns:repeat(7,1fr); gap:8px; margin-bottom:16px; flex:1 1 auto; }
-  .col { border-radius:10px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.08); }
-  .col-header { padding:9px 5px; font-size:15px; font-weight:700; text-align:center; }
-  .col-body { padding:7px; display:flex; flex-direction:column; gap:7px; }
-
-  /* col 7: split into two halves */
-  .col7-top, .col7-bot { padding:7px; display:flex; flex-direction:column; gap:7px; }
-  .col7-divider { height:2px; background:var(--amber); margin:0; }
-
-  .c1{background:var(--teal-light);border:1.5px solid var(--teal-border);}
-  .c1 .col-header{background:var(--teal-border);color:var(--teal-dark);}
-  .c1 .chip{border-color:var(--teal-border);color:var(--teal-dark);}
-
-  .c2{background:var(--amber-light);border:1.5px solid var(--amber);}
-  .c2 .col-header{background:var(--amber);color:var(--amber-dark);}
-  .c2 .chip{border-color:var(--amber);color:var(--amber-dark);}
-
-  .c3{background:var(--purple-light);border:1.5px solid var(--purple-border);}
-  .c3 .col-header{background:var(--purple-border);color:var(--purple-dark);}
-  .c3 .chip{border-color:var(--purple-border);color:var(--purple-dark);}
-
-  .c4{background:var(--coral-light);border:1.5px solid var(--coral);}
-  .c4 .col-header{background:var(--coral);color:var(--coral-dark);}
-  .c4 .chip{border-color:var(--coral);color:var(--coral-dark);}
-
-  .c5{background:var(--teal-light);border:1.5px solid var(--teal-border);}
-  .c5 .col-header{background:var(--teal-border);color:var(--teal-dark);}
-  .c5 .chip{border-color:var(--teal-border);color:var(--teal-dark);}
-
-  .c6{background:var(--purple-light);border:1.5px solid var(--purple-border);}
-  .c6 .col-header{background:var(--purple-border);color:var(--purple-dark);}
-  .c6 .chip{border-color:var(--purple-border);color:var(--purple-dark);}
-
-  .c7{background:var(--amber-light);border:1.5px solid var(--amber);}
-  .c7 .col-header{background:var(--amber);color:var(--amber-dark);}
-  .c7 .chip{border-color:var(--amber);color:var(--amber-dark);}
-  .c7 .chip-dir{border-color:var(--purple-border);color:var(--purple-dark);background:var(--purple-light);}
-  .c7 .chip-who{border-color:var(--teal-border);color:var(--teal-dark);background:var(--teal-light);}
-
-  .chip {
-    background:white; border:1.5px solid; border-radius:6px;
-    padding:9px 5px; font-size:15px; font-weight:700;
-    text-align:center; cursor:pointer;
-    transition:transform 0.1s, opacity 0.15s;
-    user-select:none; line-height:1.3; word-break:keep-all;
+      --success:#4FCB86; --success-bg:#123322; --success-ink:#B6EBCB;
+      --danger:#E5675A;  --danger-bg:#3A1712;  --danger-ink:#F6C3BC;
+      --info:#4FA6C9;    --info-bg:#12313D;    --info-ink:#9AD4EC;
+    }
   }
-  .chip:hover{transform:scale(1.04);}
-  .chip.selected{opacity:0.3; transform:scale(0.96);}
+  :root[data-theme="dark"]{
+    --paper:#211F1A; --ink:#EDE9DD; --ink-soft:#A9A392; --line:#3A362C; --card-bg:#2A2822;
+    --shadow:0 1px 3px rgba(0,0,0,0.4),0 4px 16px rgba(0,0,0,0.3);
 
-  /* ── Formula bar ── */
-  .formula-section {
-    background:white; border-radius:12px;
-    padding:16px 18px; box-shadow:0 2px 8px rgba(0,0,0,0.08);
-    margin-bottom:14px; width:100%;
-  }
-  .formula-row {
-    display:flex; align-items:center; justify-content:center;
-    gap:6px; width:100%;
-  }
-  .f-box {
-    border-radius:7px; padding:9px 12px;
-    font-size:15px; font-weight:700;
-    white-space:nowrap; flex-shrink:0;
-  }
-  .f-arrow { color:var(--muted); font-size:18px; flex-shrink:0; }
-  .f-v-wrap {
-    display:flex; flex-direction:column; align-items:center; gap:3px; flex-shrink:0;
-  }
-  .f-v-boxes { display:flex; gap:5px; align-items:center; }
-  .f-v {
-    background:var(--teal-light); border:1.5px solid var(--teal-border);
-    color:var(--teal-dark); padding:9px 14px; flex-shrink:0;
-    border-radius:7px; font-size:15px; font-weight:700;
-  }
-  .f-note {
-    font-size:13px; color:var(--red); font-weight:700;
-    text-decoration:underline; text-underline-offset:2px;
-    white-space:nowrap; flex-shrink:0;
-  }
-  .f-branch {
-    display:flex; flex-direction:column; gap:5px;
-  }
-  .f-dir {
-    background:var(--purple-light); border:1.5px solid var(--purple-border);
-    color:var(--purple-dark); font-size:14px;
-  }
-  .f-who {
-    background:var(--teal-light); border:1.5px solid var(--teal-border);
-    color:var(--teal-dark); font-size:14px;
+    --caller:#4FCB9B; --caller-bg:#123B2E; --caller-ink:#8FE0BE;
+    --item:#E0A542;   --item-bg:#3B2C10;   --item-ink:#F0C374;
+    --time:#9C82E0;   --time-bg:#2A2247;   --time-ink:#C9B8F5;
+    --polite:#E08862; --polite-bg:#3A2018; --polite-ink:#F0AE93;
+    --loc:#4FA6C9;    --loc-bg:#12313D;    --loc-ink:#9AD4EC;
+    --verb:#7A6BDA;   --verb-bg:#211D42;   --verb-ink:#B9AFF0;
+    --dir:#D99A3E;    --dir-bg:#3A2A10;    --dir-ink:#F0C579;
+
+    --success:#4FCB86; --success-bg:#123322; --success-ink:#B6EBCB;
+    --danger:#E5675A;  --danger-bg:#3A1712;  --danger-ink:#F6C3BC;
+    --info:#4FA6C9;    --info-bg:#12313D;    --info-ink:#9AD4EC;
   }
 
-  /* ── Drop zone ── */
-  .drop-section { background:white; border-radius:12px; padding:16px 18px; box-shadow:0 2px 8px rgba(0,0,0,0.08); }
-  .drop-zone {
-    min-height:96px; border:2px dashed var(--border); border-radius:8px;
-    display:flex; flex-wrap:wrap; align-items:center;
-    gap:8px; padding:12px 14px;
-    transition:border-color 0.2s, background 0.2s; margin-bottom:12px;
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{
+    margin:0; font-family:'Noto Sans TC',sans-serif; background:var(--paper); color:var(--ink);
+    padding:22px 16px 32px; display:flex; flex-direction:column; gap:16px; align-items:center;
   }
-  .drop-zone.drag-over { border-color:var(--teal); background:var(--teal-light); }
+  .wrap{ width:100%; max-width:1180px; display:flex; flex-direction:column; gap:16px; }
 
-  .sentence-chip {
-    display:inline-flex; align-items:center; gap:5px;
-    background:var(--teal-light); border:1.5px solid var(--teal-border);
-    border-radius:7px; padding:9px 14px;
-    font-size:19px; font-weight:700; color:var(--teal-dark);
-    cursor:grab; user-select:none; touch-action:none;
+  header{ text-align:center; display:flex; flex-direction:column; gap:6px; }
+  h1{
+    font-family:'Noto Serif TC',serif; font-weight:900; font-size:clamp(24px,4vw,32px);
+    color:var(--ink); text-wrap:balance; letter-spacing:0.01em;
   }
-  .remove-btn {
-    width:19px; height:19px; border-radius:50%;
-    background:var(--teal-border); color:white;
-    font-size:12px; display:flex; align-items:center; justify-content:center;
-    cursor:pointer; flex-shrink:0; font-weight:900; line-height:1;
-  }
-  .btn-row { display:flex; gap:10px; }
-  .btn {
-    flex:1; padding:15px; border-radius:8px; border:none;
-    font-family:'Noto Sans TC',sans-serif; font-size:17px;
-    font-weight:700; cursor:pointer; transition:transform 0.1s;
-  }
-  .btn:active{transform:scale(0.97);}
-  .btn-reset { background:var(--bg); border:1.5px solid var(--border); color:var(--muted); }
-  .btn-check { background:var(--teal); color:white; }
-  .result-msg { text-align:center; font-size:17px; font-weight:700; margin-top:12px; min-height:24px; }
-  .result-msg.good{color:var(--teal);}
-  .result-msg.bad{color:var(--red);}
+  .sub{ color:var(--ink-soft); font-size:clamp(12.5px,1.8vw,14.5px); max-width:640px; margin:0 auto; line-height:1.6; }
 
-  #drag-ghost {
-    position:fixed; pointer-events:none; z-index:9999;
-    background:var(--teal-light); border:2px solid var(--teal);
-    border-radius:8px; padding:9px 14px;
-    font-family:'Noto Sans TC',sans-serif; font-size:19px; font-weight:700;
-    color:var(--teal-dark); box-shadow:0 8px 24px rgba(0,0,0,0.2);
-    display:none; white-space:nowrap;
+  /* mode toggle */
+  .mode-toggle{
+    display:flex; gap:4px; background:var(--card-bg); border:1.5px solid var(--line);
+    border-radius:999px; padding:4px; box-shadow:var(--shadow); align-self:center;
+  }
+  .mode-btn{
+    border:none; background:transparent; font-family:'Noto Sans TC',sans-serif; font-weight:700;
+    font-size:clamp(12.5px,2vw,14.5px); padding:9px clamp(12px,3vw,18px); border-radius:999px; cursor:pointer; color:var(--ink-soft);
+    transition:background .15s, color .15s;
+  }
+  .mode-btn.active{ background:var(--verb); color:#fff; }
+
+  /* scenario banner */
+  .scenario-banner{
+    background:var(--info-bg); border-left:4px solid var(--info); border-radius:10px;
+    padding:14px 16px; display:none; gap:10px; align-items:center; justify-content:space-between;
+    box-shadow:var(--shadow);
+  }
+  .scenario-banner.show{ display:flex; flex-wrap:wrap; }
+  .scenario-text{ color:var(--info-ink); font-weight:700; font-size:clamp(13.5px,2vw,15.5px); line-height:1.7; flex:1 1 320px; }
+  .scenario-text b{ font-family:'Noto Serif TC',serif; }
+  .scenario-controls{ display:flex; gap:8px; align-items:center; flex-shrink:0; }
+  .lang-toggle{ display:flex; gap:2px; background:var(--card-bg); border:1.5px solid var(--info); border-radius:8px; padding:2px; }
+  .lang-btn{
+    border:none; background:transparent; color:var(--info-ink); font-family:'Noto Sans TC',sans-serif;
+    font-weight:700; font-size:clamp(11px,1.6vw,12.5px); padding:6px 10px; border-radius:6px; cursor:pointer;
+  }
+  .lang-btn.active{ background:var(--info); color:#fff; }
+  .btn-redraw{
+    border:1.5px solid var(--info); background:transparent; color:var(--info-ink);
+    font-family:'Noto Sans TC',sans-serif; font-weight:700; font-size:clamp(12px,1.8vw,13.5px);
+    padding:8px 14px; border-radius:8px; cursor:pointer; white-space:nowrap; flex-shrink:0;
+  }
+  .btn-redraw:active{ transform:scale(0.97); }
+
+  /* word bank grid */
+  .grid{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:10px;
+  }
+  .col{
+    background:var(--card-bg); border:1.5px solid var(--line); border-radius:12px;
+    box-shadow:var(--shadow); display:flex; flex-direction:column; overflow:hidden;
+  }
+  .col-header{
+    padding:9px 10px; font-size:clamp(12px,1.8vw,14px); font-weight:700; text-align:center; flex-shrink:0;
+  }
+  .col-body{
+    padding:8px; display:flex; flex-direction:column; gap:6px;
+  }
+  .subcol-divider{ height:2px; margin:2px 8px; opacity:.5; flex-shrink:0; }
+  .subcol-label{ font-size:11px; font-weight:700; color:var(--ink-soft); padding:2px 8px 0; letter-spacing:.03em; }
+
+  .c-caller .col-header{ background:var(--caller-bg); color:var(--caller-ink); }
+  .c-item   .col-header{ background:var(--item-bg);   color:var(--item-ink); }
+  .c-time   .col-header{ background:var(--time-bg);   color:var(--time-ink); }
+  .c-polite .col-header{ background:var(--polite-bg); color:var(--polite-ink); }
+  .c-loc    .col-header{ background:var(--loc-bg);    color:var(--loc-ink); }
+  .c-verb   .col-header{ background:var(--verb-bg);   color:var(--verb-ink); }
+  .c-dir    .col-header{ background:var(--dir-bg);    color:var(--dir-ink); }
+
+  .chip{
+    border-radius:7px; padding:clamp(6px,1.5vw,8px) 6px; font-size:clamp(11.5px,2vw,14px); font-weight:700; text-align:center;
+    cursor:pointer; user-select:none; line-height:1.35; word-break:keep-all;
+    border:1.5px solid; background:var(--card-bg); transition:transform .1s;
+  }
+  .chip:hover{ transform:scale(1.03); }
+  .chip:active{ transform:scale(0.97); }
+
+  .chip-caller{ border-color:var(--caller); color:var(--caller-ink); background:var(--card-bg); }
+  .chip-item{   border-color:var(--item);   color:var(--item-ink);   background:var(--card-bg); }
+  .chip-time{   border-color:var(--time);   color:var(--time-ink);   background:var(--card-bg); }
+  .chip-polite{ border-color:var(--polite); color:var(--polite-ink); background:var(--card-bg); }
+  .chip-loc{    border-color:var(--loc);    color:var(--loc-ink);    background:var(--card-bg); }
+  .chip-verb{   border-color:var(--verb);   color:var(--verb-ink);   background:var(--card-bg); }
+  .chip-dir{    border-color:var(--dir);    color:var(--dir-ink);    background:var(--card-bg); }
+
+  /* formula strip */
+  .formula{
+    background:var(--card-bg); border:1.5px solid var(--line); border-radius:12px;
+    box-shadow:var(--shadow); padding:12px 16px; font-size:clamp(11px,1.7vw,13px); color:var(--ink-soft);
+    display:flex; flex-wrap:wrap; gap:6px; align-items:center; justify-content:center;
+  }
+  .formula b{ color:var(--ink); font-weight:700; }
+  .formula .arrow{ color:var(--ink-soft); }
+
+  /* drop zone */
+  .drop-card{ background:var(--card-bg); border:1.5px solid var(--line); border-radius:12px; box-shadow:var(--shadow); padding:16px; display:flex; flex-direction:column; gap:12px; }
+  .drop-zone{
+    min-height:64px; border:2px dashed var(--line); border-radius:10px; display:flex; flex-wrap:wrap;
+    align-items:center; gap:8px; padding:12px 14px; transition:border-color .2s, background .2s;
+  }
+  .drop-zone.drag-over{ border-color:var(--verb); background:var(--verb-bg); }
+  .sentence-chip{
+    display:inline-flex; align-items:center; gap:6px; border-radius:8px; padding:clamp(7px,1.8vw,9px) clamp(9px,2.2vw,13px);
+    font-size:clamp(14px,2.6vw,18px); font-weight:700; cursor:grab; user-select:none; touch-action:none;
+    border:1.5px solid;
+  }
+  .remove-btn{
+    width:18px; height:18px; border-radius:50%; background:rgba(0,0,0,0.18); color:#fff;
+    font-size:11px; display:flex; align-items:center; justify-content:center; cursor:pointer;
+    flex-shrink:0; font-weight:900; line-height:1;
+  }
+  .btn-row{ display:flex; gap:10px; flex-wrap:wrap; }
+  .btn{
+    flex:1 1 auto; padding:clamp(10px,2vw,13px) clamp(11px,2.4vw,16px); border-radius:9px; border:none; font-family:'Noto Sans TC',sans-serif;
+    font-size:clamp(13px,2.4vw,15.5px); font-weight:700; cursor:pointer; transition:transform .1s; min-width:100px;
+  }
+  .btn:active{ transform:scale(0.97); }
+  .btn-reset{ background:var(--paper); border:1.5px solid var(--line); color:var(--ink-soft); flex:0 0 auto; }
+  .btn-speak{ background:var(--info-bg); color:var(--info-ink); border:1.5px solid var(--info); flex:0 0 auto; }
+  .btn-check{ background:var(--verb); color:#fff; flex:1 1 160px; }
+
+  .panel{ border-radius:9px; padding:11px 14px; font-size:clamp(12.5px,1.8vw,14.5px); font-weight:500; line-height:1.6; display:none; }
+  .panel.show{ display:block; }
+  .panel-meaning{ background:var(--info-bg); color:var(--info-ink); }
+  .panel-good{ background:var(--success-bg); color:var(--success-ink); font-weight:700; }
+  .panel-bad{ background:var(--danger-bg); color:var(--danger-ink); font-weight:700; }
+
+  #drag-ghost{
+    position:fixed; pointer-events:none; z-index:9999; border-radius:8px; padding:9px 13px;
+    font-family:'Noto Sans TC',sans-serif; font-size:18px; font-weight:700;
+    box-shadow:0 8px 24px rgba(0,0,0,0.25); display:none; white-space:nowrap;
+    background:var(--verb-bg); border:2px solid var(--verb); color:var(--verb-ink);
+  }
+
+  @media (max-width:900px){
+    .grid{ grid-template-columns:repeat(auto-fit,minmax(128px,1fr)); }
+  }
+  @media (max-width:480px){
+    .btn-check{ flex-basis:100%; }
+    .grid{ grid-template-columns:repeat(auto-fit,minmax(108px,1fr)); }
   }
 </style>
 </head>
 <body>
+<div class="wrap">
 
-<h1>校園指令和禮貌請求</h1>
+<header>
+  <h1>指令和禮貌請求</h1>
+  <p class="sub">組出「請別人幫忙拿東西」的句子。自由組合可以看系統怎麼解讀你的句意；情境挑戰會用外語出任務，看你能不能排出合邏輯的中文句子。</p>
+</header>
+
+<div class="mode-toggle">
+  <button class="mode-btn active" id="modeFreeBtn" onclick="setMode('free')">自由組合</button>
+  <button class="mode-btn" id="modeScenarioBtn" onclick="setMode('scenario')">情境挑戰</button>
+</div>
+
+<div class="scenario-banner" id="scenarioBanner">
+  <div class="scenario-text" id="scenarioText"></div>
+  <div class="scenario-controls">
+    <div class="lang-toggle">
+      <button class="lang-btn" id="langEnBtn" onclick="setLang('en')">EN</button>
+      <button class="lang-btn active" id="langJaBtn" onclick="setLang('ja')">日本語</button>
+    </div>
+    <button class="btn-redraw" onclick="drawScenario()">🎲 換一題</button>
+  </div>
+</div>
 
 <div class="grid" id="wordGrid"></div>
 
-<!-- Formula bar -->
-<div class="formula-section">
-  <div class="formula-row">
-    <span class="f-box" style="background:#F1EFE8;border:1.5px solid #D3D1C7;color:#2C2C2A;">叫人</span>
-    <span class="f-arrow">—</span>
-    <span class="f-box" style="background:var(--coral-light);border:1.5px solid var(--coral);color:var(--coral-dark);">禮貌用語</span>
-    <span class="f-arrow">—</span>
-    <span class="f-box" style="background:var(--amber-light);border:1.5px solid var(--amber);color:var(--amber-dark);">東西</span>
-    <span class="f-arrow">—</span>
-    <span class="f-box" style="background:var(--coral-light);border:1.5px solid var(--coral);color:var(--coral-dark);">禮貌用語</span>
-    <span class="f-arrow">→</span>
-    <div class="f-v-wrap">
-      <div class="f-v-boxes">
-        <span class="f-v">V1</span>
-        <span class="f-arrow" style="font-size:12px;">—</span>
-        <span class="f-v">V2</span>
-        <span class="f-arrow" style="font-size:12px;">—</span>
-        <span class="f-v">V3</span>
-        <span style="font-size:13px;color:var(--teal-dark);font-weight:700;flex-shrink:0;">···</span>
-      </div>
-      <span class="f-note">動作詞組注意時間順序！</span>
-    </div>
-    <span class="f-arrow">→</span>
-    <div class="f-branch">
-      <span class="f-box f-dir">方向：來／去／上來／下去</span>
-      <span class="f-box f-who">給誰</span>
-    </div>
-  </div>
+<div class="formula">
+  <span>公式：</span><b>叫人</b><span class="arrow">－</span><b>禮貌用語</b><span class="arrow">－</span>
+  <b>東西</b><span class="arrow">－</span><b>禮貌用語</b><span class="arrow">→</span>
+  <b>V1(去/到地點)</b><span class="arrow">－</span><b>V2(動詞)</b><span class="arrow">－</span><b>V3(方向)</b>
+  <span class="arrow">→</span><b>給誰</b>
 </div>
 
-<!-- Drop zone -->
-<div class="drop-section">
+<div class="drop-card">
   <div class="drop-zone" id="dropZone"></div>
   <div class="btn-row">
     <button class="btn btn-reset" onclick="resetAll()">🔄 重置</button>
-    <button class="btn btn-check" onclick="readSentence()">📢 唸出來</button>
+    <button class="btn btn-speak" onclick="speakSentence()">🔊 唸出來</button>
+    <button class="btn btn-check" onclick="checkSentence()">✅ 檢查</button>
   </div>
-  <div class="result-msg" id="resultMsg"></div>
+  <div class="panel panel-meaning" id="meaningPanel"></div>
+  <div class="panel" id="resultPanel"></div>
 </div>
 
+</div>
 <div id="drag-ghost"></div>
 
 <script>
-const groups = [
-  { title:"① 叫人",     cls:"c1", words:["小老師","班長","王老師","陳主任","林同學","Linda"] },
-  { title:"② 東西",     cls:"c2", words:["講義","考卷","白板筆","椅子","課本","作業","車"] },
-  { title:"③ 時間",     cls:"c3", words:["明天","下星期一","等一下"] },
-  { title:"④ 禮貌用語", cls:"c4", words:["請（你）","不好意思","麻煩你","請你幫我","麻煩你幫我","請你幫我～，好嗎？","可以請你幫我～嗎？","可以麻煩你幫我～嗎？"] },
-  { title:"⑤ （去/到）地點", cls:"c5", words:["辦公室","總務處","教務處","活動中心","保健室"] },
-  { title:"⑥ 動詞",     cls:"c6", words:["拿","帶","叫","交","發","傳","改","教","找","收","放在"] },
+/* ---------- word bank data ---------- */
+const columns = [
+  { cls:'c-caller', chipCls:'chip-caller', title:'① 叫人', role:'caller',
+    words:['小老師','班長','王老師','陳主任','林同學','Linda'] },
+  { cls:'c-item', chipCls:'chip-item', title:'② 東西', role:'item',
+    words:['講義','考卷','白板筆','椅子','課本','作業','車'] },
+  { cls:'c-time', chipCls:'chip-time', title:'③ 時間', role:'time',
+    words:['明天','下星期一','等一下'] },
+  { cls:'c-polite', title:'④ 禮貌用語', split:true,
+    top:{ role:'politeFront', label:'放前面／中間',
+      words:['不好意思','麻煩你','請（你）','請你幫我','麻煩你幫我','可以請你幫我','可以麻煩你幫我'] },
+    bot:{ role:'politeSuffix', label:'只能放最後',
+      words:['好嗎？','嗎？'] } },
+  { cls:'c-loc', chipCls:'chip-loc', title:'⑤ 去/到＋地點', role:'loc',
+    words:['去辦公室','到辦公室','去總務處','到總務處','去教務處','到教務處','去活動中心','到活動中心','去保健室','到保健室'] },
+  { cls:'c-verb', chipCls:'chip-verb', title:'⑥ 動詞', role:'verb',
+    words:['拿','帶','叫','交','發','傳','改','教','找','收','放在'] },
+  { cls:'c-dir', title:'⑦ 方向／對象', split:true,
+    top:{ role:'dir', label:'方向',
+      words:['來','去','上來','下去','桌上','回家'] },
+    bot:{ role:'target', label:'給誰',
+      words:['給陳主任','給林老師','給我'] } },
 ];
-const col7 = {
-  title:"⑦ 方向/對象",
-  dir:["來","去","上來","下去","桌上","回家"],
-  who:["給陳主任","給林老師","給我"]
-};
 
+const roleClass = { caller:'chip-caller', item:'chip-item', time:'chip-time',
+  politeFront:'chip-polite', politeSuffix:'chip-polite', loc:'chip-loc', verb:'chip-verb',
+  dir:'chip-dir', target:'chip-dir' };
+
+const roleLabel = { caller:'叫的人', item:'東西', time:'時間', politeFront:'禮貌用語',
+  politeSuffix:'句尾用語', loc:'地點', verb:'動詞', dir:'方向', target:'對象' };
+
+/* ---------- scenarios (task given in EN/JA — the student produces the Chinese) ---------- */
+const scenarios = [
+  { en:'The handout is in the office. Ask <b>Linda</b> to go get it and bring it back for you.',
+    ja:'資料は事務室にあります。<b>リンダさん</b>に、事務室へ行ってそれを持ってきてもらうよう頼んでください。',
+    need:{ caller:['Linda'], item:['講義'], loc:['去辦公室','到辦公室'], verb:['拿','帶'], dir:['來','回家'] },
+    order:[['loc','verb'],['verb','item'],['item','dir']],
+    hint:'這是「取回」的情境：要先去地點、再拿東西、最後才是帶回來（方向要用「來」或「回家」）。' },
+  { en:'You are holding some exam papers. Ask the <b>class monitor</b> to take them to the General Affairs Office.',
+    ja:'あなたは今、試験用紙を持っています。<b>学級委員長</b>に、それを総務処へ持って行ってもらうよう頼んでください。',
+    need:{ caller:['班長'], item:['考卷'], loc:['去總務處','到總務處'], verb:['拿','帶','交'] },
+    order:[['item','verb'],['verb','loc']],
+    hint:'這是「送去」的情境：先講東西，再說怎麼處理（拿／帶／交），最後才是地點。' },
+  { en:'Ask classmate <b>Lin</b> to hand in this homework to Director Chen tomorrow.',
+    ja:'<b>林さん</b>に、明日この宿題を陳主任に渡してもらうよう頼んでください。',
+    need:{ caller:['林同學'], item:['作業'], verb:['交'], target:['給陳主任'], time:['明天'] },
+    order:[['item','verb'],['verb','target']],
+    hint:'先講東西，動詞「交」之後才接「給陳主任」；別忘了加上「明天」。' },
+  { en:'You left the whiteboard marker in the health room. Ask the <b>class monitor</b> to go get it and bring it back.',
+    ja:'ホワイトボードのペンを保健室に忘れました。<b>学級委員長</b>に、それを取りに行って持ってきてもらうよう頼んでください。',
+    need:{ caller:['班長'], item:['白板筆'], loc:['去保健室','到保健室'], verb:['拿','帶'], dir:['來','回家'] },
+    order:[['loc','verb'],['verb','item'],['item','dir']],
+    hint:'先去地點、再拿東西、最後帶回來。' },
+  { en:'Ask the <b>class helper</b> to take the textbook to the Academic Affairs Office.',
+    ja:'<b>日直（小老師）</b>に、教科書を教務処へ持って行ってもらうよう頼んでください。',
+    need:{ caller:['小老師'], item:['課本'], loc:['去教務處','到教務處'], verb:['拿','帶'] },
+    order:[['item','verb'],['verb','loc']],
+    hint:'先講課本，再說怎麼處理，最後才是地點。' },
+  { en:'Ask the <b>class helper</b> to tidy up the handouts and bring them to you.',
+    ja:'<b>日直（小老師）</b>に、資料をまとめて私に渡してもらうよう頼んでください。',
+    need:{ caller:['小老師'], item:['講義'], verb:['收','拿'], target:['給我'] },
+    order:[['item','verb'],['verb','target']],
+    hint:'先講東西，再講動詞，最後「給我」。' },
+  { en:'Your bike is at the activity center. Ask classmate <b>Lin</b> to go get it and bring it back for you.',
+    ja:'自転車は活動センターにあります。<b>林さん</b>に、それを取りに行って持ってきてもらうよう頼んでください。',
+    need:{ caller:['林同學'], item:['車'], loc:['去活動中心','到活動中心'], verb:['拿','帶'], dir:['來','回家'] },
+    order:[['loc','verb'],['verb','item'],['item','dir']],
+    hint:'先去地點、再拿東西、最後帶回來。' },
+  { en:'Ask the <b>class monitor</b> to move a chair to the office.',
+    ja:'<b>学級委員長</b>に、椅子を事務室へ運んでもらうよう頼んでください。',
+    need:{ caller:['班長'], item:['椅子'], loc:['去辦公室','到辦公室'], verb:['拿','帶'] },
+    order:[['item','verb'],['verb','loc']],
+    hint:'先講東西，再說怎麼處理，最後才是地點。' },
+  { en:'Ask classmate <b>Lin</b> to grade the exam papers and bring them to you tomorrow.',
+    ja:'<b>林さん</b>に、明日試験用紙を採点して私に渡してもらうよう頼んでください。',
+    need:{ caller:['林同學'], item:['考卷'], verb:['改'], target:['給我'], time:['明天'] },
+    order:[['item','verb'],['verb','target']],
+    hint:'先講東西，再講動詞「改」，最後「給我」；別忘了加上「明天」。' },
+  { en:'The handouts will be at the General Affairs Office. Ask <b>Linda</b> to go get them and bring them back next Monday.',
+    ja:'資料は来週月曜日に総務処にあります。<b>リンダさん</b>に、それを取りに行って持ってきてもらうよう頼んでください。',
+    need:{ caller:['Linda'], item:['講義'], loc:['去總務處','到總務處'], verb:['拿','帶'], dir:['來','回家'], time:['下星期一'] },
+    order:[['loc','verb'],['verb','item'],['item','dir']],
+    hint:'先去地點、再拿東西、最後帶回來；別忘了加上「下星期一」。' },
+];
+
+let mode = 'free';
+let lang = 'ja';
+let currentScenario = null;
+
+/* ---------- build word bank ---------- */
 const grid = document.getElementById('wordGrid');
 const dropZone = document.getElementById('dropZone');
 const ghost = document.getElementById('drag-ghost');
 
-// Build cols 1–6
-groups.forEach(g => {
-  const col = document.createElement('div');
-  col.className = `col ${g.cls}`;
-  col.innerHTML = `<div class="col-header">${g.title}</div><div class="col-body"></div>`;
-  const body = col.querySelector('.col-body');
-  g.words.forEach(w => buildChip(w, body, g.cls));
-  grid.appendChild(col);
+columns.forEach(col => {
+  const wrap = document.createElement('div');
+  wrap.className = `col ${col.cls}`;
+  if (!col.split) {
+    wrap.innerHTML = `<div class="col-header">${col.title}</div><div class="col-body"></div>`;
+    const body = wrap.querySelector('.col-body');
+    col.words.forEach(w => buildChip(w, col.role, body, col.chipCls));
+  } else {
+    wrap.innerHTML = `<div class="col-header">${col.title}</div>
+      <div class="col-body">
+        <div class="subcol-label">${col.top.label}</div>
+        <div class="top-list"></div>
+        <div class="subcol-divider" style="background:var(--${col.cls.replace('c-','')==='polite'?'polite':'dir'})"></div>
+        <div class="subcol-label">${col.bot.label}</div>
+        <div class="bot-list"></div>
+      </div>`;
+    const topList = wrap.querySelector('.top-list');
+    const botList = wrap.querySelector('.bot-list');
+    col.top.words.forEach(w => buildChip(w, col.top.role, topList, roleClass[col.top.role]));
+    col.bot.words.forEach(w => buildChip(w, col.bot.role, botList, roleClass[col.bot.role]));
+  }
+  grid.appendChild(wrap);
 });
 
-// Build col 7 — split with divider
-const col7el = document.createElement('div');
-col7el.className = 'col c7';
-col7el.innerHTML = `<div class="col-header">${col7.title}</div>
-  <div class="col7-top"></div>
-  <div class="col7-divider"></div>
-  <div class="col7-bot"></div>`;
-col7.dir.forEach(w => buildChip(w, col7el.querySelector('.col7-top'), 'c7 chip-dir'));
-col7.who.forEach(w => buildChip(w, col7el.querySelector('.col7-bot'), 'c7 chip-who'));
-grid.appendChild(col7el);
-
-function buildChip(w, container, extraCls='') {
+function buildChip(word, role, container, chipCls) {
   const chip = document.createElement('div');
-  chip.className = 'chip';
-  if (extraCls) chip.classList.add(...extraCls.split(' ').filter(Boolean));
-  chip.textContent = w;
-  chip.dataset.word = w;
-  chip.addEventListener('click', () => addWord(w, chip));
-  chip.addEventListener('touchstart', onChipTouchStart, {passive:false});
+  chip.className = `chip ${chipCls}`;
+  chip.textContent = word;
+  chip.dataset.word = word;
+  chip.dataset.role = role;
+  chip.addEventListener('click', () => addWord(word, role, chipCls));
+  chip.addEventListener('touchstart', (e) => onChipTouchStart(e, word, role, chipCls), {passive:false});
   container.appendChild(chip);
 }
 
-function addWord(word, sourceChip) {
-  if (sourceChip && sourceChip.classList.contains('selected')) return;
-  if (sourceChip) sourceChip.classList.add('selected');
+/* ---------- sentence building ---------- */
+function addWord(word, role, chipCls) {
   const sc = document.createElement('div');
-  sc.className = 'sentence-chip';
+  sc.className = `sentence-chip ${chipCls}`;
   sc.dataset.word = word;
+  sc.dataset.role = role;
   sc.innerHTML = `${word}<span class="remove-btn" onclick="removeChip(this)">✕</span>`;
   makeDraggable(sc);
   dropZone.appendChild(sc);
-  document.getElementById('resultMsg').textContent = '';
+  clearPanels();
 }
 
 function removeChip(btn) {
-  const sc = btn.parentElement;
-  const word = sc.dataset.word;
-  sc.remove();
-  document.querySelectorAll('.chip').forEach(c => { if(c.dataset.word===word) c.classList.remove('selected'); });
-  document.getElementById('resultMsg').textContent = '';
+  btn.parentElement.remove();
+  clearPanels();
 }
 
 function resetAll() {
   dropZone.innerHTML = '';
-  document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
-  document.getElementById('resultMsg').textContent = '';
+  clearPanels();
 }
 
-function readSentence() {
-  const chips = dropZone.querySelectorAll('.sentence-chip');
-  if (!chips.length) { showMsg('還沒有詞語喔！','bad'); return; }
-  const sentence = Array.from(chips).map(c => c.dataset.word).join('');
-  showMsg('✓ ' + sentence, 'good');
+function clearPanels() {
+  document.getElementById('meaningPanel').className = 'panel panel-meaning';
+  document.getElementById('resultPanel').className = 'panel';
+}
+
+function getChips() {
+  return Array.from(dropZone.querySelectorAll('.sentence-chip')).map(c => ({word:c.dataset.word, role:c.dataset.role}));
+}
+
+function speakSentence() {
+  const chips = getChips();
+  if (!chips.length) { return; }
+  const sentence = chips.map(c => c.word).join('');
   if ('speechSynthesis' in window) {
     const utt = new SpeechSynthesisUtterance(sentence);
-    utt.lang='zh-TW'; utt.rate=0.85;
+    utt.lang = 'zh-TW'; utt.rate = 0.85;
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(utt);
   }
 }
 
-function showMsg(txt, cls) {
-  const el = document.getElementById('resultMsg');
-  el.className = 'result-msg ' + cls;
-  el.textContent = txt;
+/* ---------- structural rules (always apply) ---------- */
+function checkStructure(chips) {
+  const suffixIdxs = [];
+  chips.forEach((c,i)=>{ if (c.role==='politeSuffix') suffixIdxs.push(i); });
+  if (suffixIdxs.length && suffixIdxs[suffixIdxs.length-1] !== chips.length-1) {
+    return { ok:false, msg:'「好嗎？／嗎？」這類句尾用語要放在整句最後面喔！' };
+  }
+  const hasKeyi = chips.some(c => c.role==='politeFront' && c.word.startsWith('可以'));
+  const hasMa = chips.some(c => c.role==='politeSuffix' && c.word==='嗎？');
+  const hasHaoma = chips.some(c => c.role==='politeSuffix' && c.word==='好嗎？');
+  if (hasKeyi && hasHaoma) {
+    return { ok:false, msg:'「可以～」開頭的句子，最後要接「嗎？」，不是「好嗎？」喔。' };
+  }
+  if (hasKeyi && !hasMa) {
+    return { ok:false, msg:'「可以～」開頭的句子，最後別忘了加「嗎？」。' };
+  }
+  return { ok:true };
 }
 
-function makeDraggable(el) { el.addEventListener('touchstart', onSentenceTouchStart, {passive:false}); }
+/* ---------- meaning breakdown (always shown, both modes) ---------- */
+function parseMeaning(chips) {
+  const idx = (role) => chips.findIndex(c => c.role===role);
+  const itemI = idx('item'), verbI = idx('verb'), locI = idx('loc'), dirI = idx('dir'), targetI = idx('target');
+  if (itemI===-1 || verbI===-1) return null;
+
+  const item = chips[itemI].word, verb = chips[verbI].word;
+  const place = locI!==-1 ? chips[locI].word.replace(/^(去|到)/,'') : null;
+  const dir = dirI!==-1 ? chips[dirI].word : null;
+
+  if (locI!==-1) {
+    if (locI < verbI && verbI < itemI) {
+      return `這句的意思：東西目前在「${place}」，你是要對方去那裡把「${item}」${verb}${dir? dir: ''}——也就是「把它帶回來」的方向。`;
+    }
+    if (itemI < verbI && (locI > verbI || locI > itemI)) {
+      return `這句的意思：「${item}」現在在說話者這邊，要對方把它${verb}${dir? dir:''}到「${place}」——也就是「送過去」的方向。`;
+    }
+    return '詞序不太符合常見用法，聽的人可能搞不清楚東西現在在哪裡、要移動到哪裡。試試看：地點放在動詞前面＝去那裡做什麼；東西放在動詞前面＝把它怎麼處理。';
+  }
+  if (targetI!==-1 && itemI < verbI && verbI < targetI) {
+    return `這句的意思：把「${item}」${verb}${chips[targetI].word}。`;
+  }
+  if (dirI!==-1) {
+    return `這句的意思：把「${item}」${verb}${dir}。`;
+  }
+  return `這句的意思：把「${item}」${verb}一下。`;
+}
+
+/* ---------- scenario grading ---------- */
+function checkScenarioMatch(scenario, chips) {
+  const positions = {};
+  const missing = [];
+  for (const role in scenario.need) {
+    const accept = scenario.need[role];
+    const foundIdx = chips.findIndex(c => c.role===role && accept.includes(c.word));
+    if (foundIdx === -1) missing.push(roleLabel[role] || role);
+    else positions[role] = foundIdx;
+  }
+  if (missing.length) {
+    return { ok:false, msg:`還少了：${missing.join('、')}。` };
+  }
+  const hasPolite = chips.some(c => c.role==='politeFront');
+  if (!hasPolite) {
+    return { ok:false, msg:'這是「請求」，別忘了加一個禮貌用語（不好意思／麻煩你／請你幫我…）。' };
+  }
+  for (const [a,b] of (scenario.order||[])) {
+    if (positions[a] > positions[b]) {
+      return { ok:false, msg: scenario.hint };
+    }
+  }
+  return { ok:true, msg:'✓ 完全符合這個情境的邏輯！' };
+}
+
+/* ---------- main check button ---------- */
+function checkSentence() {
+  const chips = getChips();
+  const meaningEl = document.getElementById('meaningPanel');
+  const resultEl = document.getElementById('resultPanel');
+
+  if (!chips.length) {
+    meaningEl.classList.remove('show');
+    resultEl.className = 'panel panel-bad show';
+    resultEl.textContent = '還沒有排詞語喔！';
+    return;
+  }
+
+  const meaning = parseMeaning(chips);
+  if (meaning) {
+    meaningEl.textContent = meaning;
+    meaningEl.classList.add('show');
+  } else {
+    meaningEl.classList.remove('show');
+  }
+
+  const structure = checkStructure(chips);
+  if (!structure.ok) {
+    resultEl.className = 'panel panel-bad show';
+    resultEl.textContent = '✗ ' + structure.msg;
+    return;
+  }
+
+  if (mode === 'scenario' && currentScenario) {
+    const result = checkScenarioMatch(currentScenario, chips);
+    resultEl.className = 'panel ' + (result.ok ? 'panel-good' : 'panel-bad') + ' show';
+    resultEl.textContent = (result.ok ? '' : '✗ ') + result.msg;
+  } else {
+    resultEl.className = 'panel panel-good show';
+    resultEl.textContent = '✓ 句子結構沒有問題（自由組合模式不檢查特定任務，只看邏輯結構）。';
+  }
+}
+
+/* ---------- mode / scenario switching ---------- */
+function setMode(m) {
+  mode = m;
+  document.getElementById('modeFreeBtn').classList.toggle('active', m==='free');
+  document.getElementById('modeScenarioBtn').classList.toggle('active', m==='scenario');
+  document.getElementById('scenarioBanner').classList.toggle('show', m==='scenario');
+  resetAll();
+  if (m === 'scenario') drawScenario();
+}
+
+function drawScenario() {
+  let next;
+  do { next = scenarios[Math.floor(Math.random()*scenarios.length)]; }
+  while (scenarios.length > 1 && next === currentScenario);
+  currentScenario = next;
+  renderScenarioText();
+  resetAll();
+}
+
+function renderScenarioText() {
+  if (!currentScenario) return;
+  document.getElementById('scenarioText').innerHTML = '📋 ' + currentScenario[lang];
+}
+
+function setLang(l) {
+  lang = l;
+  document.getElementById('langEnBtn').classList.toggle('active', l==='en');
+  document.getElementById('langJaBtn').classList.toggle('active', l==='ja');
+  renderScenarioText();
+}
+
+/* ---------- drag reordering (touch) ---------- */
+function makeDraggable(el){ el.addEventListener('touchstart', onSentenceTouchStart, {passive:false}); }
 
 let touchDragEl=null, touchOffX=0, touchOffY=0, touchPlaceholder=null;
 
@@ -311,68 +577,63 @@ function onSentenceTouchStart(e) {
   const t = e.touches[0];
   touchDragEl = e.currentTarget;
   const rect = touchDragEl.getBoundingClientRect();
-  touchOffX = t.clientX - rect.left;
-  touchOffY = t.clientY - rect.top;
+  touchOffX = t.clientX - rect.left; touchOffY = t.clientY - rect.top;
   touchPlaceholder = document.createElement('div');
-  touchPlaceholder.style.cssText=`width:${rect.width}px;height:${rect.height}px;border-radius:7px;background:var(--teal-light);border:2px dashed var(--teal-border);flex-shrink:0;`;
+  touchPlaceholder.style.cssText = `width:${rect.width}px;height:${rect.height}px;border-radius:8px;background:var(--verb-bg);border:2px dashed var(--verb);flex-shrink:0;`;
   touchDragEl.parentNode.insertBefore(touchPlaceholder, touchDragEl);
   ghost.textContent = touchDragEl.dataset.word;
-  ghost.style.display='block';
-  ghost.style.left=(t.clientX-touchOffX)+'px';
-  ghost.style.top=(t.clientY-touchOffY)+'px';
+  ghost.style.display = 'block';
+  ghost.style.left = (t.clientX-touchOffX)+'px'; ghost.style.top = (t.clientY-touchOffY)+'px';
   document.addEventListener('touchmove', onSentenceTouchMove, {passive:false});
   document.addEventListener('touchend', onSentenceTouchEnd);
 }
-
 function onSentenceTouchMove(e) {
   e.preventDefault();
   const t = e.touches[0];
-  ghost.style.left=(t.clientX-touchOffX)+'px';
-  ghost.style.top=(t.clientY-touchOffY)+'px';
+  ghost.style.left = (t.clientX-touchOffX)+'px'; ghost.style.top = (t.clientY-touchOffY)+'px';
   const chips = Array.from(dropZone.querySelectorAll('.sentence-chip')).filter(c=>c!==touchDragEl);
-  let inserted=false;
+  let inserted = false;
   for (const chip of chips) {
-    const r=chip.getBoundingClientRect();
-    if (t.clientX < r.left+r.width/2) { dropZone.insertBefore(touchPlaceholder,chip); inserted=true; break; }
+    const r = chip.getBoundingClientRect();
+    if (t.clientX < r.left + r.width/2) { dropZone.insertBefore(touchPlaceholder, chip); inserted = true; break; }
   }
   if (!inserted) dropZone.appendChild(touchPlaceholder);
 }
-
 function onSentenceTouchEnd() {
-  ghost.style.display='none';
-  if (touchPlaceholder && touchDragEl) { touchPlaceholder.parentNode.insertBefore(touchDragEl,touchPlaceholder); touchPlaceholder.remove(); }
-  touchDragEl=null; touchPlaceholder=null;
-  document.removeEventListener('touchmove',onSentenceTouchMove);
-  document.removeEventListener('touchend',onSentenceTouchEnd);
+  ghost.style.display = 'none';
+  if (touchPlaceholder && touchDragEl) { touchPlaceholder.parentNode.insertBefore(touchDragEl, touchPlaceholder); touchPlaceholder.remove(); }
+  touchDragEl = null; touchPlaceholder = null;
+  document.removeEventListener('touchmove', onSentenceTouchMove);
+  document.removeEventListener('touchend', onSentenceTouchEnd);
+  clearPanels();
 }
 
-let chipDragEl=null, chipWord=null;
-function onChipTouchStart(e) {
+/* ---------- drag from word bank (touch) ---------- */
+let chipWord=null, chipRole=null, chipCls=null;
+function onChipTouchStart(e, word, role, cls) {
   e.preventDefault();
-  const chip=e.currentTarget;
-  if (chip.classList.contains('selected')) return;
-  chipWord=chip.dataset.word; chipDragEl=chip;
-  const t=e.touches[0];
-  ghost.textContent=chipWord; ghost.style.display='block';
-  ghost.style.left=(t.clientX-20)+'px'; ghost.style.top=(t.clientY-20)+'px';
-  document.addEventListener('touchmove',onChipTouchMove,{passive:false});
-  document.addEventListener('touchend',onChipTouchEnd);
+  chipWord = word; chipRole = role; chipCls = cls;
+  const t = e.touches[0];
+  ghost.textContent = word; ghost.style.display = 'block';
+  ghost.style.left = (t.clientX-20)+'px'; ghost.style.top = (t.clientY-20)+'px';
+  document.addEventListener('touchmove', onBankTouchMove, {passive:false});
+  document.addEventListener('touchend', onBankTouchEnd);
 }
-function onChipTouchMove(e) {
+function onBankTouchMove(e) {
   e.preventDefault();
-  const t=e.touches[0];
-  ghost.style.left=(t.clientX-20)+'px'; ghost.style.top=(t.clientY-20)+'px';
-  const r=dropZone.getBoundingClientRect();
-  dropZone.classList.toggle('drag-over', t.clientX>r.left&&t.clientX<r.right&&t.clientY>r.top&&t.clientY<r.bottom);
+  const t = e.touches[0];
+  ghost.style.left = (t.clientX-20)+'px'; ghost.style.top = (t.clientY-20)+'px';
+  const r = dropZone.getBoundingClientRect();
+  dropZone.classList.toggle('drag-over', t.clientX>r.left && t.clientX<r.right && t.clientY>r.top && t.clientY<r.bottom);
 }
-function onChipTouchEnd(e) {
-  ghost.style.display='none'; dropZone.classList.remove('drag-over');
-  const t=e.changedTouches[0];
-  const r=dropZone.getBoundingClientRect();
-  if (t.clientX>r.left&&t.clientX<r.right&&t.clientY>r.top&&t.clientY<r.bottom) addWord(chipWord,chipDragEl);
-  chipDragEl=null; chipWord=null;
-  document.removeEventListener('touchmove',onChipTouchMove);
-  document.removeEventListener('touchend',onChipTouchEnd);
+function onBankTouchEnd(e) {
+  ghost.style.display = 'none'; dropZone.classList.remove('drag-over');
+  const t = e.changedTouches[0];
+  const r = dropZone.getBoundingClientRect();
+  if (t.clientX>r.left && t.clientX<r.right && t.clientY>r.top && t.clientY<r.bottom) addWord(chipWord, chipRole, chipCls);
+  chipWord=null; chipRole=null; chipCls=null;
+  document.removeEventListener('touchmove', onBankTouchMove);
+  document.removeEventListener('touchend', onBankTouchEnd);
 }
 </script>
 </body>
